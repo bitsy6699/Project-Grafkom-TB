@@ -101,13 +101,144 @@ void updateLightingLogic() {
     }
 }
 
-// ---------------------------------- Object and Display Functions
-void drawTeapot() {
-    glColor3f(0.50f, 0.20f, 0.05f);
+void drawBox(float width, float height, float depth, float r, float g, float b) {
+    glColor3f(r, g, b);
     glPushMatrix();
-    glTranslatef(0.0f, 0.8f, 0.0f);
-    glutSolidTeapot(0.5);
+    glScalef(width, height, depth);
+    glutSolidCube(1.0);
     glPopMatrix();
+}
+// // ---------------------------------- Object and Display Functions
+// void drawTeapot() {
+//     glColor3f(0.50f, 0.20f, 0.05f);
+//     glPushMatrix();
+//     glTranslatef(0.0f, 0.8f, 0.0f);
+//     glutSolidTeapot(0.5);
+//     glPopMatrix();
+// }
+
+void drawCharacter() {
+    // Geser seluruh karakter ke posisi duduk (di atas kursi)
+    // Kursi sangat rendah (0.25). Hip adjust ke -0.05.
+    
+    glPushMatrix();
+    glTranslatef(0.0f, -0.05f, 0.0f); // Was 0.05
+
+    // 1. KEPALA (Skin Color)
+    glPushMatrix();
+    glTranslatef(0.0f, 1.6f, 0.0f); 
+    drawBox(0.8f, 0.8f, 0.8f, 0.96f, 0.80f, 0.69f); 
+    
+    // Mata
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glPushMatrix(); glTranslatef(-0.2f, 0.1f, 0.41f); glScalef(0.1f, 0.1f, 0.05f); glutSolidCube(1.0); glPopMatrix();
+    glPushMatrix(); glTranslatef(0.2f, 0.1f, 0.41f); glScalef(0.1f, 0.1f, 0.05f); glutSolidCube(1.0); glPopMatrix();
+    
+    // 1.5 TOPI RIMBA
+    glPushMatrix();
+    glTranslatef(0.0f, 0.4f, 0.0f); 
+    drawBox(1.2f, 0.1f, 1.2f, 0.45f, 0.30f, 0.15f); // Brim
+    glTranslatef(0.0f, 0.2f, 0.0f);
+    drawBox(0.8f, 0.3f, 0.8f, 0.45f, 0.30f, 0.15f); // Crown
+    glColor3f(0.3f, 0.2f, 0.1f); glScalef(0.82f, 0.1f, 0.82f); glutSolidCube(1.0); // Pita
+    glPopMatrix();
+    glPopMatrix(); // End Kepala
+
+    // 2. BADAN (Kemeja Merah)
+    glPushMatrix();
+    glTranslatef(0.0f, 0.6f, -0.1f); 
+    glRotatef(-10.0f, 1.0f, 0.0f, 0.0f); // Senderan santai (Lean back)
+    drawBox(1.0f, 1.2f, 0.5f, 0.8f, 0.1f, 0.1f); 
+    // Kancing
+    glColor3f(1.0f, 1.0f, 1.0f);
+    for(float i=0.2f; i>-0.4f; i-=0.3f) {
+        glPushMatrix(); glTranslatef(0.0f, i, 0.26f); glScalef(0.05f, 0.05f, 0.05f); glutSolidCube(1.0); glPopMatrix();
+    }
+    glPopMatrix();
+
+    // 3. LENGAN (Ditaruh di paha)
+    // Lengan Kanan
+    glPushMatrix();
+    glTranslatef(0.75f, 0.6f, -0.1f);
+    glRotatef(-10.0f, 1.0f, 0.0f, 0.0f); // Ikut lean body
+    drawBox(0.4f, 1.0f, 0.5f, 0.8f, 0.1f, 0.1f); // Lengan atas
+    
+    glTranslatef(0.0f, -0.5f, 0.0f); // Siku
+    glRotatef(-30.0f, 1.0f, 0.0f, 0.0f); // Tekuk ke depan (ke arah paha)
+    glRotatef(-10.0f, 0.0f, 0.0f, 1.0f); // Masuk dikit
+    glTranslatef(0.0f, -0.4f, 0.0f); // Lengan bawah
+    drawBox(0.35f, 0.8f, 0.4f, 0.8f, 0.1f, 0.1f); 
+    
+    glTranslatef(0.0f, -0.5f, 0.0f); // Tangan
+    drawBox(0.35f, 0.3f, 0.4f, 0.96f, 0.80f, 0.69f); 
+    glPopMatrix();
+
+    // Lengan Kiri
+    glPushMatrix();
+    glTranslatef(-0.75f, 0.6f, -0.1f);
+    glRotatef(-10.0f, 1.0f, 0.0f, 0.0f); // Ikut lean body
+    drawBox(0.4f, 1.0f, 0.5f, 0.8f, 0.1f, 0.1f); // Lengan atas
+    
+    glTranslatef(0.0f, -0.5f, 0.0f); // Siku
+    glRotatef(-30.0f, 1.0f, 0.0f, 0.0f); // Tekuk ke depan
+    glRotatef(10.0f, 0.0f, 0.0f, 1.0f); // Masuk dikit
+    glTranslatef(0.0f, -0.4f, 0.0f); // Lengan bawah
+    drawBox(0.35f, 0.8f, 0.4f, 0.8f, 0.1f, 0.1f);
+    
+    glTranslatef(0.0f, -0.5f, 0.0f); // Tangan
+    drawBox(0.35f, 0.3f, 0.4f, 0.96f, 0.80f, 0.69f);
+    glPopMatrix();
+
+    // 4. KAKI (POSE DUDUK BIASA)
+    // Kaki Kiri
+    glPushMatrix();
+    glTranslatef(-0.25f, 0.0f, 0.0f); // Pangkal paha Kiri (Normal)
+    glRotatef(0.0f, 0.0f, 1.0f, 0.0f); // Lurus ke depan
+    
+    // Paha Kiri
+    glPushMatrix();
+    glTranslatef(0.0f, 0.1f, 0.6f); 
+    drawBox(0.40f, 0.40f, 1.2f, 0.55f, 0.40f, 0.25f); 
+    glPopMatrix();
+
+    // Betis Kiri
+    glPushMatrix();
+    glTranslatef(0.0f, 0.1f, 1.1f); // Lutut
+    glRotatef(-10.0f, 1.0f, 0.0f, 0.0f); // Lurus ke bawah
+    glTranslatef(0.0f, -0.5f, 0.0f); 
+    drawBox(0.35f, 1.2f, 0.4f, 0.55f, 0.40f, 0.25f); 
+    
+    // Sepatu Kiri
+    glTranslatef(0.0f, -0.7f, 0.1f);
+    drawBox(0.4f, 0.3f, 0.6f, 0.1f, 0.1f, 0.1f);
+    glPopMatrix();
+    glPopMatrix(); // End Kaki Kiri
+
+    // Kaki Kanan
+    glPushMatrix();
+    glTranslatef(0.25f, 0.0f, 0.0f); // Pangkal paha Kanan (Normal)
+    glRotatef(0.0f, 0.0f, 1.0f, 0.0f); // Lurus ke depan
+    
+    // Paha Kanan
+    glPushMatrix();
+    glTranslatef(0.0f, 0.1f, 0.6f); 
+    drawBox(0.40f, 0.40f, 1.2f, 0.55f, 0.40f, 0.25f); 
+    glPopMatrix();
+
+    // Betis Kanan
+    glPushMatrix();
+    glTranslatef(0.0f, 0.1f, 1.1f); // Lutut
+    glRotatef(-10.0f, 1.0f, 0.0f, 0.0f); 
+    glTranslatef(0.0f, -0.5f, 0.0f); 
+    drawBox(0.35f, 1.2f, 0.4f, 0.55f, 0.40f, 0.25f); 
+    
+    // Sepatu Kanan
+    glTranslatef(0.0f, -0.7f, 0.1f);
+    drawBox(0.4f, 0.3f, 0.6f, 0.1f, 0.1f, 0.1f);
+    glPopMatrix();
+    glPopMatrix(); // End Kaki Kanan
+
+    glPopMatrix(); // End Character Translation
 }
 
 void drawLightSource() {
@@ -214,7 +345,7 @@ void display() {
 
     updateLightingLogic();
     drawFloor();
-    drawTeapot();
+    drawCharacter();
     drawLightSource();
 
     glutSwapBuffers();
@@ -326,7 +457,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(windowWidth, windowHeight);
-    glutCreateWindow("Pencahayaan Lanjutan");
+    glutCreateWindow("Rizki dzulfikar Al-Qatiri_2406118");
     // glutFullScreen(); // Optional, windowed is easier to debug
 
     glClearColor(0.1f, 0.1f, 0.15f, 1.0f);

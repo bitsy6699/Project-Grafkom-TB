@@ -1,12 +1,12 @@
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
 #include <GL/glut.h>
-#endif
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <stdio.h>
+
+
+// ==================== BAGIAN 1: RASKY (SETUP & LINGKUNGAN) ========================
+
 
 //konfigurasi layar
 int w = 1024;
@@ -19,11 +19,10 @@ float treeScale = 1.0f;     //skala besar/kecil pohon
 
 //variabel kamera
 float camAngle = 0.4f;     //horizontal
-float camPitch = 0.0f;      //vertical (look up/down)
-float cameraY = 5.0f;       //tinggi kamera (fixed or controlled separately)
-float camDist = 45.0f;      //jarak zoom (unused in FPS)
-float viewX = 0.0f;         //posisi kamera X
-float viewZ = 20.0f;        //posisi kamera Z
+float cameraY = 15.0f;      //tinggi kamera
+float camDist = 45.0f;      //jarak zoom
+float viewX = 0.0f;         //titik X
+float viewZ = 0.0f;         //titik Z
 
 //anim alam
 float waterAnim = 0.0f;     
@@ -34,12 +33,9 @@ int lastMouseX = -1;
 int lastMouseY = -1;
 int isMouseDragging = 0;
 
-//Input State untuk Smooth Movement
-bool keyState[256]; // Array untuk menyimpan status tombol (ditekan/tidak)
-
 //sistem cuaca
-int isSun = 1;             
-int weatherMode = 1;      
+int isSun = 1;              
+int weatherMode = 1;       
 
 //konfigurasi partikel (Hujan/Salju)
 #define MAX_PARTICLES 300
@@ -52,10 +48,10 @@ float starPos[NUM_STARS][3];
 
 //warna Bus
 float busColors[4][3] = {
-    {0.7f, 0.5f, 0.2f},   
+    {0.7f, 0.5f, 0.2f},    
     {0.15f, 0.06f, 0.1f}, 
-    {1.0f, 1.0f, 1.0f},   
-    {0.7f, 0.3f, 0.7f}    
+    {1.0f, 1.0f, 1.0f},    
+    {0.7f, 0.3f, 0.7f}     
 };
 
 //inisialisasi data
@@ -79,7 +75,8 @@ void initRandomObjects() {
 }
 
 void drawStars() {
-    if (isSun) return; //bintang cuma ada pas malam
+    if (isSun) return;
+
     
     glDisable(GL_LIGHTING); 
     glDisable(GL_FOG); //matikan kabut
@@ -192,13 +189,17 @@ void drawEnvironment() {
     glDisable(GL_BLEND);
     
     //pohon melingkar
-    for (int i = 0; i < 40; i++) { 
-        float angle = i * (2.0f * 3.14159f / 40); 
+    for (int i = 0; i < 60 ; i++) { 
+        float angle = i * (2.0f * 3.14159f / 60); 
         drawTree(cos(angle) * 30.0f, sin(angle) * 30.0f); 
         drawTree(cos(angle + 0.5f) * 25.0f, sin(angle + 0.5f) * 25.0f); 
         drawTree(cos(angle + 0.6f) * 20.0f, sin(angle + 0.6f) * 20.0f); 
     }
 }
+
+
+// ====================== BAGIAN 2: RISKY (OBJEK & MODELING) ========================
+
 
 void drawBonfire(float x, float z) {
     glPushMatrix(); 
@@ -392,7 +393,7 @@ void drawCampingBus(int idx) {
     glTranslatef(2.0f, -0.2f, 0.6f); 
     glutSolidSphere(0.25f, 12, 12); 
     
-    glPopMatrix();
+    glPopMatrix(); 
     
     glPushMatrix(); 
     glTranslatef(2.0f, -0.2f, -0.6f); 
@@ -436,22 +437,19 @@ void drawCampingBus(int idx) {
     glPopMatrix();
 }
 
+
+// ================= BAGIAN 3: NABIL (LOGIKA, INTERAKSI & MAIN) =====================
+
+
 //TAMPILAN
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
     glLoadIdentity();
     
     //kamera
-    //kamera FPS
-    float dirX = sin(camAngle) * cos(camPitch);
-    float dirY = sin(camPitch);
-    float dirZ = -cos(camAngle) * cos(camPitch);
-    
-    //Posisi kamera = viewX, cameraY, viewZ
-    //Target = Posisi + Arah
-    gluLookAt(viewX, cameraY, viewZ, 
-              viewX + dirX, cameraY + dirY, viewZ + dirZ, 
-              0.0, 1.0, 0.0);
+    float camX = viewX + (camDist * sin(camAngle)); 
+    float camZ = viewZ + (camDist * cos(camAngle));
+    gluLookAt(camX, cameraY, camZ, viewX, 0.0, viewZ, 0.0, 1.0, 0.0);
     
     //pencahayaan utama
     GLfloat light_pos0[] = { 0.0, 20.0, 0.0, 0.0 }; 
@@ -501,41 +499,7 @@ void display() {
     glutSwapBuffers();
 }
 
-void updateMovement() {
-    float moveSpeed = 0.5f; // Kecepatan gerak (per-frame)
-
-    // Forward Vector (3D)
-    float dx = sin(camAngle) * cos(camPitch);
-    float dy = sin(camPitch);
-    float dz = -cos(camAngle) * cos(camPitch);
-
-    // Strafe Vector (Horizontal only for stability)
-    float sx = cos(camAngle);
-    float sz = sin(camAngle);
-
-    if (keyState['w']) {
-        viewX += dx * moveSpeed;
-        cameraY += dy * moveSpeed;
-        viewZ += dz * moveSpeed;
-    }
-    if (keyState['s']) {
-        viewX -= dx * moveSpeed;
-        cameraY -= dy * moveSpeed;
-        viewZ -= dz * moveSpeed;
-    }
-    if (keyState['a']) {
-        viewX -= sx * moveSpeed;
-        viewZ -= sz * moveSpeed;
-    }
-    if (keyState['d']) {
-        viewX += sx * moveSpeed;
-        viewZ += sz * moveSpeed;
-    }
-}
-
 void timer(int v) {
-    updateMovement(); // Update posisi setiap frame timer
-
     //anim hujan/salju
     for (int i = 0; i < MAX_PARTICLES; i++) {
         float speed = (weatherMode == 2) ? particleSpeed[i] * 3.0f : particleSpeed[i];
@@ -547,14 +511,26 @@ void timer(int v) {
     fireAnim += 0.2f; 
     
     glutPostRedisplay(); 
-    glutTimerFunc(16, timer, 0); // 60 FPS approx (1000ms / 60 = 16.6ms)
+    glutTimerFunc(20, timer, 0);
 }
 
 void keyboard(unsigned char key, int x, int y) {
-    keyState[key] = true; // Set tombol sedang ditekan
-
     switch (key) {
-        // Kontrol lain yang sifatnya toggle/sekali tekan
+        //komtrol bus
+        case 'w':
+            busMove -= 0.5f; 
+            if(busMove < 9.0f) busMove = 9.0f; 
+            break; 
+        case 's': 
+            busMove += 0.5f; 
+            break; 
+        case 'a': 
+            busRotation += 5.0f; 
+            break; 
+        case 'd': 
+            busRotation -= 5.0f; 
+            break;
+        //komtrol poohon
         case 'r': 
             treeScale += 0.1f; 
             if(treeScale > 3.0f) treeScale = 3.0f; 
@@ -563,6 +539,7 @@ void keyboard(unsigned char key, int x, int y) {
             treeScale -= 0.1f; 
             if(treeScale < 0.2f) treeScale = 0.2f; 
             break; 
+        //kontrol lingkungan
         case 'm': 
             isSun = !isSun; 
             break; 
@@ -574,29 +551,15 @@ void keyboard(unsigned char key, int x, int y) {
             exit(0); 
             break; // esc
     }
-}
-
-void keyboardUp(unsigned char key, int x, int y) {
-    keyState[key] = false; // Set tombol sudah dilepas
+    glutPostRedisplay();
 }
 
 void special(int key, int x, int y) {
-    switch (key) {
-        //kontrol bus (Arrow Keys)
-        case GLUT_KEY_UP:
-            busMove -= 0.5f; 
-            if(busMove < 9.0f) busMove = 9.0f; 
-            break; 
-        case GLUT_KEY_DOWN: 
-            busMove += 0.5f; 
-            break; 
-        case GLUT_KEY_LEFT: 
-            busRotation += 5.0f; 
-            break; 
-        case GLUT_KEY_RIGHT: 
-            busRotation -= 5.0f; 
-            break;
-    }
+    float moveSpeed = 1.0f;
+    if (key == GLUT_KEY_UP) viewZ -= moveSpeed; 
+    if (key == GLUT_KEY_DOWN) viewZ += moveSpeed;  
+    if (key == GLUT_KEY_LEFT) viewX -= moveSpeed; 
+    if (key == GLUT_KEY_RIGHT) viewX += moveSpeed; 
     glutPostRedisplay();
 }
 
@@ -613,7 +576,7 @@ void mouseClick(int button, int state, int x, int y) {
         if (camDist > 100.0f) camDist = 100.0f; 
     }
     //drag cenah
-    else if (button == GLUT_LEFT_BUTTON || button == GLUT_RIGHT_BUTTON) { 
+    else if (button == GLUT_LEFT_BUTTON) { 
         isMouseDragging = (state == GLUT_DOWN); 
         lastMouseX = x; 
         lastMouseY = y; 
@@ -624,11 +587,10 @@ void mouseClick(int button, int state, int x, int y) {
 void mouseMotion(int x, int y) { 
     if (isMouseDragging) { 
         camAngle += (x - lastMouseX) * 0.005f; 
-        camPitch -= (y - lastMouseY) * 0.005f; // Invert mouse Y for intuitive pitch
-
-        // Batas pitch supaya tidak salto (approx -89 to 89 degrees in radians)
-        if (camPitch > 1.5f) camPitch = 1.5f;
-        if (camPitch < -1.5f) camPitch = -1.5f;
+        cameraY -= (y - lastMouseY) * 0.2f;    
+        //batas verti
+        if (cameraY < 2.0f) cameraY = 2.0f;    
+        if (cameraY > 60.0f) cameraY = 60.0f; 
 
         lastMouseX = x; 
         lastMouseY = y; 
@@ -664,17 +626,16 @@ int main(int argc, char **argv) {
     glutInit(&argc, argv); 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(w, h); 
-    glutCreateWindow("TB Grafika Komputer - Kel 9");
+    glutCreateWindow("TB Grafika Komputer - BERKEMAH DI ANTARTIKA - Kel 9"); 
     
     init();
     glutDisplayFunc(display); 
     glutReshapeFunc(reshape); 
     glutKeyboardFunc(keyboard); 
-    glutKeyboardUpFunc(keyboardUp); // Register fungsi saat tombol dilepas
     glutSpecialFunc(special); 
     glutMouseFunc(mouseClick); 
     glutMotionFunc(mouseMotion); 
-    glutTimerFunc(20, timer, 0);
+    glutTimerFunc(20, timer, 0); 
     
     glutMainLoop(); 
     return 0;
