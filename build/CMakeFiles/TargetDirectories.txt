@@ -1,0 +1,4 @@
+/Users/rizkidzulfikaral-qatiri/projectcss/build/CMakeFiles/projectcpp.dir
+/Users/rizkidzulfikaral-qatiri/projectcss/build/CMakeFiles/test.dir
+/Users/rizkidzulfikaral-qatiri/projectcss/build/CMakeFiles/edit_cache.dir
+/Users/rizkidzulfikaral-qatiri/projectcss/build/CMakeFiles/rebuild_cache.dir

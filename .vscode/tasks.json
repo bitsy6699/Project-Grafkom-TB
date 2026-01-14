@@ -1,0 +1,110 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/build && cmake .. && make",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "rm -rf ${workspaceFolder}/build && mkdir -p ${workspaceFolder}/build && cd ${workspaceFolder}/build && cmake .. && make",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Run",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/projectcpp",
+            "dependsOn": [
+                "Build"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Check Syntax Only",
+            "type": "shell",
+            "command": "clang++ -fsyntax-only -std=c++17 -I${workspaceFolder}/include -I${workspaceFolder}/third_party ${file}",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "Run Interactive Menu",
+            "type": "shell",
+            "command": "${workspaceFolder}/build_and_run.sh",
+            "args": [
+                "",
+                "${workspaceFolder}"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Compile & Run Active File",
+            "type": "shell",
+            "command": "${workspaceFolder}/build_and_run.sh",
+            "args": [
+                "${file}",
+                "${workspaceFolder}"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "isBackground": false
+        },
+        {
+            "label": "Kill Running Process",
+            "type": "shell",
+            "command": "pkill -f '_exec|projectcpp' 2>/dev/null || true",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

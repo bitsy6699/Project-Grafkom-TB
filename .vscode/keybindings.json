@@ -1,0 +1,75 @@
+[
+    // ===== macOS Build & Debug Shortcuts =====
+    // Build Project - Cmd+B
+    {
+        "key": "cmd+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Build"
+    },
+    // Clean Build - Cmd+Shift+B
+    {
+        "key": "cmd+shift+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Clean Build"
+    },
+    // Debug/Run - Cmd+D
+    {
+        "key": "cmd+d",
+        "command": "workbench.action.debug.start"
+    },
+    // Stop Debugging - Cmd+Shift+D
+    {
+        "key": "cmd+shift+d",
+        "command": "workbench.action.debug.stop"
+    },
+    // Debug Step Over - Cmd+Right Arrow
+    {
+        "key": "cmd+right",
+        "command": "workbench.action.debug.stepOver",
+        "when": "inDebugMode"
+    },
+    // Debug Step Into - Cmd+Down Arrow
+    {
+        "key": "cmd+down",
+        "command": "workbench.action.debug.stepInto",
+        "when": "inDebugMode"
+    },
+    // Debug Step Out - Cmd+Up Arrow
+    {
+        "key": "cmd+up",
+        "command": "workbench.action.debug.stepOut",
+        "when": "inDebugMode"
+    },
+    // Continue/Pause - Cmd+/
+    {
+        "key": "cmd+/",
+        "command": "workbench.action.debug.continue",
+        "when": "inDebugMode"
+    },
+    // Toggle Breakpoint - Cmd+L
+    {
+        "key": "cmd+l",
+        "command": "editor.debug.action.toggleBreakpoint",
+        "when": "editorTextFocus"
+    },
+    // Comment Line - Cmd+K Cmd+C (standard macOS VS Code)
+    // Already default, but keeping for reference
+    // Run Task - Cmd+Shift+R
+    {
+        "key": "cmd+shift+r",
+        "command": "workbench.action.tasks.runTask"
+    },
+    // ===== Active File Execution =====
+    // Compile & Run Active File - Cmd+R
+    {
+        "key": "cmd+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Compile & Run Active File"
+    },
+    // Kill Running Process - Cmd+K (better than ESC to avoid conflicts)
+    {
+        "key": "cmd+k",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Kill Running Process"
+    }
+]
